@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nadie contrata lo que no ve — Julian Giordana · La Metro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES (frontend-slides viewport-base.css)
+   =========================================== */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg,#000)}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg,#000)}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg,#fff)}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;overflow:clip;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#fff)}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1}
+img,video,canvas,svg{max-width:100%;max-height:100%}
+.deck-controls{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:1000}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;background:#fff}
+  .deck-viewport{position:static;overflow:visible;background:#fff}
+  .deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none}
+  .slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always}
+  .slide:last-child{break-after:auto;page-break-after:auto}
+  .deck-controls,.bar,.overview,.edit-toggle,.edit-hotzone{display:none!important}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important}}
+
+/* ===========================================
+   DESIGN TOKENS — La Metro: rojo / negro / papel
+   =========================================== */
+:root{
+  --red:#ED1C24;      /* rojo del logo La Metro */
+  --ink:#0D0D0D;      /* negro */
+  --paper:#EEEDE8;    /* papel crudo (refs suizas) */
+  --grey:#BDBBB4;     /* texto fantasma */
+  --mid:#6E6C67;
+  --sans:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --stage-bg:#000;
+  --ray:#D90000;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:var(--sans);font-feature-settings:"ss01","cv11";-webkit-font-smoothing:antialiased;color:var(--ink)}
+h1,h2,h3,p,figure{margin:0}
+button{font:inherit;color:inherit}
+
+/* Fondos */
+.paper{--slide-bg:var(--paper);color:var(--ink)}
+.ink{--slide-bg:var(--ink);color:var(--paper)}
+.red{--slide-bg:var(--red);color:var(--paper)}
+
+/* ===========================================
+   CHROME — rótulos mono en esquinas (refs Switch / Refund / RUE)
+   =========================================== */
+.chrome,.foot{position:absolute;left:64px;right:64px;display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:32px;font:500 17px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em;z-index:4;pointer-events:none}
+.chrome{top:42px;align-items:start}
+.foot{bottom:38px;align-items:end;grid-template-columns:1.1fr 1fr 1fr auto}
+.chrome .lm{height:24px;width:auto;display:block}
+.red .chrome .lm{color:var(--paper)} .paper .chrome .lm{color:var(--red)} .ink .chrome .lm{color:var(--paper)}
+.chrome b,.foot b{font-weight:600}
+.dim{opacity:.55}.o14{opacity:.14}.o45{opacity:.45}.o75{opacity:.75}
+.rule{position:absolute;left:64px;right:64px;height:1px;background:currentColor;opacity:.25;z-index:3}
+.rule.top{top:96px}
+
+/* Área de contenido */
+.pad{position:absolute;inset:150px 64px 104px;display:flex;flex-direction:column}
+
+/* ===========================================
+   TIPOGRAFÍA
+   =========================================== */
+.d{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:.86;text-wrap:balance}
+.up{text-transform:uppercase}
+.c{font-weight:800;letter-spacing:-.03em}
+.w{}
+.m{font:500 20px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.03em}
+.body{font-size:36px;font-weight:500;line-height:1.18;letter-spacing:-.015em}
+.tr{color:var(--red)}.ti{color:var(--ink)}.tp{color:var(--paper)}.tg{color:var(--grey)}
+.red .tr{color:var(--ink)}
+.sup{font:500 .16em/1 var(--mono);vertical-align:top;letter-spacing:0;position:relative;top:.35em;margin-right:.25em}
+.mask{display:block}
+.mask>*{display:block}
+.ghost{position:absolute;pointer-events:none;color:var(--grey);filter:blur(10px);opacity:.55;white-space:nowrap}
+.outline{color:transparent!important;-webkit-text-stroke:2px var(--stroke)}
+.red{--stroke:var(--paper)}.ink{--stroke:#5a5a5a}.paper{--stroke:var(--red)}
+
+/* Líneas / grilla */
+.hair{height:1px;background:currentColor;opacity:.35}
+.vline{position:absolute;top:0;bottom:0;width:1px;background:var(--red)}
+.hline{position:absolute;left:0;right:0;height:1px;background:var(--red)}
+.cols12{position:absolute;inset:0 64px;display:grid;grid-template-columns:repeat(6,1fr);pointer-events:none}
+.cols12 i{border-left:1px solid currentColor;opacity:.08}
+
+/* Placeholder (imagen a reemplazar) */
+.ph{position:relative;background:repeating-linear-gradient(135deg,transparent 0 18px,rgba(0,0,0,.07) 18px 19px),#D9D7D0;display:flex;align-items:flex-end;padding:22px;overflow:hidden}
+.ink .ph{background:repeating-linear-gradient(135deg,transparent 0 18px,rgba(255,255,255,.06) 18px 19px),#1B1B1B}
+.ph span{font:500 18px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
+.ph::before{content:"";position:absolute;top:22px;right:22px;width:14px;height:14px;background:var(--red)}
+
+/* Mano alzada */
+.hand{display:inline-flex;align-items:center;gap:18px}
+.hand i{display:block;width:22px;height:22px;border-radius:50%;background:currentColor;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.3}}
+
+/* Duotono rojo (ref Die Krögers / arquitectura) */
+.duo{background:var(--red);overflow:hidden}
+.duo img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.25) brightness(1.05);mix-blend-mode:multiply;transition:filter .5s, mix-blend-mode .5s, transform .8s cubic-bezier(.16,1,.3,1)}
+.duo:hover img{filter:none;mix-blend-mode:normal;transform:scale(1.04)}
+
+/* ===========================================
+   COMPONENTES POR SLIDE
+   =========================================== */
+
+
+/* Pila cinética (capítulos / constancia) */
+.stack{position:absolute;display:flex;flex-direction:column;white-space:nowrap}
+.stack span{display:block}
+
+/* Capítulo — número gigante recortado (ref Patagonia) */
+.chnum{position:absolute;left:52px;top:409px;font-size:498px;line-height:.76;letter-spacing:-.05em !important;color:var(--ink)}
+.chtitle{position:absolute;left:734px;margin:0;line-height:.86;font-weight:800;letter-spacing:-.05em;color:var(--paper)}
+
+/* Índice (ref Portfolio template) */
+.idx{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.idx button{all:unset;cursor:pointer;font-size:108px;line-height:.98;white-space:nowrap;transition:color .3s,transform .5s cubic-bezier(.16,1,.3,1);display:block}
+.idx button:hover{color:var(--red);transform:translateX(-24px)}
+.idx button:focus-visible{outline:3px solid var(--red);outline-offset:8px}
+
+/* Votación (ref columnas Refund) */
+.vote{all:unset;cursor:pointer;position:relative;border:1.5px solid var(--red);display:flex;flex-direction:column;justify-content:space-between;padding:30px;overflow:hidden;transition:background .3s}
+.vote:hover{background:rgba(237,28,36,.05)}
+.vote:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+.vote .fillv{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--red);transition:height .6s cubic-bezier(.16,1,.3,1);z-index:0}
+.vote>*{position:relative;z-index:1}
+.vote .L{font-size:200px;color:var(--red);line-height:.78;transition:color .4s}
+.vote .q{font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:.98;transition:color .4s}
+.vote .n{font:600 22px/1 var(--mono);text-transform:uppercase;display:flex;justify-content:space-between;transition:color .4s}
+.vote.hot .L,.vote.hot .q,.vote.hot .n{color:var(--paper)}
+
+/* Trabajos para artistas */
+.work{display:flex;gap:26px;align-items:flex-end;flex:1;min-height:0}
+.work figure{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:14px;transition:opacity .4s,transform .6s cubic-bezier(.16,1,.3,1)}
+.work:hover figure{opacity:.35}
+.work figure:hover{opacity:1;transform:translateY(-18px)}
+.work img{display:block;width:100%;max-height:560px;object-fit:contain;object-position:bottom}
+.work figcaption{font:500 18px/1.3 var(--mono);text-transform:uppercase;border-top:1px solid currentColor;padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.work figcaption span{opacity:.6}
+.work figcaption b{font-weight:600}
+
+/* Grilla IG */
+/* Perfil de Instagram en teléfono (0.4) — el feed baja solo, en loop */
+.phone{position:absolute;right:200px;top:92px;width:600px;height:1180px;padding:16px;border-radius:84px;background:#0D0D0D;box-shadow:0 70px 120px -40px rgba(0,0,0,.6),inset 0 0 0 3px #2a2a2a}
+.ig{position:relative;width:100%;height:100%;border-radius:70px;overflow:hidden;background:#000;color:#F5F5F5;font-family:var(--sans);letter-spacing:-.01em}
+.ig-bar{position:absolute;left:0;right:0;top:0;z-index:2;background:#000}
+.ig-status{height:66px;display:flex;align-items:center;justify-content:space-between;padding:10px 46px 0 52px;font-size:22px}
+.ig-island{position:absolute;left:50%;top:16px;width:150px;height:42px;margin-left:-75px;border-radius:30px;background:#111;box-shadow:0 0 0 1px #222}
+.ig-sig{display:flex;align-items:flex-end;gap:3px;height:18px}.ig-sig i{width:5px;background:#fff;border-radius:2px}
+.ig-sig i:nth-child(1){height:6px}.ig-sig i:nth-child(2){height:10px}.ig-sig i:nth-child(3){height:14px}.ig-sig i:nth-child(4){height:18px}
+.ig-sig em{width:34px;height:17px;margin-left:10px;border:2px solid #fff;border-radius:5px;box-shadow:inset 0 0 0 2px #000;background:#fff}
+.ig-nav{height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:28px}
+.ig-nav b{display:flex;align-items:center;gap:8px}.vf{width:24px;height:24px}
+.ig-nav span{font-size:40px;line-height:1;width:40px}.ig-nav .ig-dots{font-size:18px;letter-spacing:2px;text-align:right}
+.ig-view{position:absolute;left:0;right:0;top:132px;bottom:0;overflow:hidden}
+.ig-scroll{will-change:transform}
+.ig-head{padding:14px 26px 0}
+.ig-row{display:flex;align-items:center;gap:30px}
+.ig-av{width:150px;height:150px;border-radius:50%;padding:5px;background:conic-gradient(from 200deg,#FEDA75,#FA7E1E,#D62976,#962FBF,#FEDA75);flex:none}
+.ig-av img{width:100%;height:100%;border-radius:50%;border:4px solid #000;object-fit:cover;display:block;background:#fff}
+.ig-stats{flex:1;display:flex;justify-content:space-between;text-align:center;font-size:19px;color:#F5F5F5}
+.ig-stats b{display:block;font-size:26px;font-weight:700;margin-bottom:2px}
+.ig-name{font-weight:700;font-size:23px;margin-top:16px}
+.ig-bio{font-size:21px;line-height:1.36;margin-top:4px}.ig-bio .cat{color:#A8A8A8}.ig-bio .at{color:#E0F1FF}.ig-bio .lk{color:#E0F1FF;font-weight:600}
+.ig-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.ig-btns span{display:grid;place-items:center;height:52px;border-radius:12px;background:#262626;font-weight:600;font-size:21px}
+.ig-btns .b1{background:#0095F6;color:#fff}
+.ig-hl{display:flex;gap:22px;margin-top:22px;overflow:hidden}
+.ig-hl span{display:flex;flex-direction:column;align-items:center;gap:8px;width:92px;flex:none;font-size:15px;color:#F5F5F5;white-space:nowrap}
+.ig-hl i{display:grid;place-items:center;width:88px;height:88px;border-radius:50%;background:#1c1c1c;box-shadow:0 0 0 2px #000,0 0 0 4px #363636;font:800 15px/1 var(--sans);font-style:normal;letter-spacing:-.02em;color:#fff}
+.ig-tabs{display:grid;grid-template-columns:repeat(3,1fr);margin:22px -26px 2px;border-top:1px solid #262626}
+.ig-tabs span{display:grid;place-items:center;height:62px;color:#737373}.ig-tabs .on{color:#F5F5F5;box-shadow:inset 0 -2px #F5F5F5}
+.ig-tabs svg{width:28px;height:28px}
+.iggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}.iggrid.dup{margin-top:3px}
+.iggrid i{position:relative;display:block;aspect-ratio:3/4;overflow:hidden;background:#121212}
+.iggrid img{width:100%;height:100%;object-fit:cover;display:block}
+.iggrid .rl{position:absolute;top:10px;right:10px;width:24px;height:24px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+/* Órbita de trabajos (2.2): anillo con profundidad, se frena al pasar el mouse */
+.orbit{flex:1;align-self:stretch;position:relative;min-width:0;perspective:1700px;perspective-origin:55% 45%;transform-style:preserve-3d}
+.orb{position:absolute;left:50%;top:50%;width:225px;will-change:transform}
+.orb img{width:100%;display:block;box-shadow:0 24px 50px -12px rgba(0,0,0,.35)}
+.igrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.igrid div{aspect-ratio:1;overflow:hidden;background:#D9D7D0}
+.igrid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.igrid div:hover img{transform:scale(1.1)}
+
+/* Marquesina */
+.marq{overflow:hidden;display:flex}
+.marq .track{display:flex;gap:24px;height:100%;width:max-content;animation:marq 180s linear infinite}
+.marq:hover .track{animation-play-state:paused}
+.marq img{height:100%;width:auto;display:block;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.marq img:hover{transform:scale(1.04) rotate(-1deg)}
+@keyframes marq{to{transform:translateX(calc(-50% - 12px))}}
+
+/* YouTube */
+.yt{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.yt a{display:block;overflow:hidden;position:relative}
+.yt img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.yt a:hover img{transform:scale(1.06)}
+.yt a::after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;font-size:44px;color:var(--paper);background:rgba(237,28,36,.75);opacity:0;transition:opacity .35s}
+.yt a:hover::after{opacity:1}
+
+/* DM */
+.dm{background:var(--ink);color:var(--paper);border-radius:48px 48px 48px 6px;padding:38px 54px;max-width:1240px}
+.dots{display:flex;gap:10px;height:40px;align-items:center}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--paper);opacity:.4;animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{50%{opacity:1;transform:translateY(-6px)}}
+
+/* Encuesta con etiquetas */
+.poll{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:20px;font-size:44px;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;padding:16px 30px;border:2px solid currentColor;border-radius:999px;transition:background .3s,color .3s}
+.poll:hover{background:var(--paper);color:var(--red)}
+.poll:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+.poll em{font:600 26px/1 var(--mono);font-style:normal;min-width:1.5em;text-align:right}
+
+/* Proceso */
+.steps{display:grid;grid-template-columns:424px 1fr 424px 1fr 424px;align-items:end;flex:1;min-height:0;position:relative}
+.step{display:flex;flex-direction:column;gap:14px;width:424px}
+.step .sim{width:424px;height:530px;overflow:hidden;background:#ddd}
+.step .sim img{width:100%;height:100%;object-fit:cover;display:block}
+.step .m{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid;padding-top:10px}
+.step .m b{font:700 52px/1 var(--sans);letter-spacing:-.04em}
+.sarr{align-self:center;justify-self:center;font-size:150px;line-height:1;margin-bottom:70px}
+.steps .ph{height:100%}
+.arrowline{position:absolute;left:0;right:0;top:50%;height:4px;background:var(--red);transform-origin:left;z-index:2}
+
+/* Semanas */
+.weeks{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.weeks div{aspect-ratio:1/1.35;border:1.5px solid rgba(238,237,232,.3);display:flex;flex-direction:column;justify-content:space-between;padding:12px;font:500 16px/1 var(--mono)}
+.weeks div.on{background:var(--red);border-color:var(--red)}
+
+/* Timer */
+.timer{all:unset;cursor:pointer;font-family:var(--sans);font-weight:800;font-size:350px;line-height:.78;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.timer:focus-visible{outline:4px solid var(--paper);outline-offset:12px}
+.timer.done{color:var(--paper)}
+.tbar{height:10px;background:rgba(13,13,13,.2);position:relative;overflow:hidden}
+.tbar i{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(1)}
+
+/* Corazones */
+.heart{display:inline-block;width:.62em;height:.56em;margin-right:.12em;vertical-align:baseline}
+
+/* QR */
+.qr{width:300px;height:300px;flex:none}
+
+
+
+/* ===========================================
+   CONTROLES (fuera del escenario)
+   =========================================== */
+.ctrl{display:flex;align-items:center;gap:6px;padding:6px;background:rgba(13,13,13,.85);border-radius:999px;transition:opacity .4s;backdrop-filter:blur(8px)}
+.idle .ctrl{opacity:0;pointer-events:none}
+.ctrl button{all:unset;cursor:pointer;width:42px;height:42px;display:grid;place-items:center;border-radius:999px;color:var(--paper)}
+.ctrl button:hover{background:rgba(238,237,232,.14)}
+.ctrl button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.ctrl svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+[data-a="count"]{display:inline-block;white-space:nowrap;font-variant-numeric:tabular-nums}
+p:has(>[data-a="count"]){white-space:nowrap} /* número + unidad (K, ', ♥) siempre en una línea */
+.count{font:600 14px/1 var(--mono);min-width:72px;text-align:center;color:var(--paper)}
+.bar{position:fixed;left:0;bottom:0;height:4px;background:var(--red);width:0;transition:width .6s cubic-bezier(.16,1,.3,1);z-index:999}
+
+/* Vista general (tecla G) */
+.overview{position:fixed;inset:0;z-index:2000;background:rgba(13,13,13,.96);padding:56px;overflow:auto;display:none;color:var(--paper);font-family:var(--mono)}
+.overview.open{display:block}
+.overview h3{font:600 14px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.6;margin:0 0 24px}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.ov-grid button{all:unset;cursor:pointer;padding:16px;border:1px solid rgba(238,237,232,.2);font:500 14px/1.35 var(--mono);text-transform:uppercase;min-height:64px}
+.ov-grid button b{display:block;color:var(--red);font-size:22px;margin-bottom:8px}
+.ov-grid button:hover,.ov-grid button.cur{background:var(--red);border-color:var(--red)}
+.ov-grid button:hover b,.ov-grid button.cur b{color:var(--ink)}
+
+/* Edición inline (tecla E) */
+.edit-hotzone{position:fixed;top:0;left:0;width:80px;height:80px;z-index:10000;cursor:pointer}
+.edit-toggle{position:fixed;top:16px;left:16px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10001;border:0;border-radius:999px;padding:10px 16px;background:var(--red);color:#fff;font:600 13px/1 var(--mono);text-transform:uppercase;cursor:pointer}
+.edit-toggle.show,.edit-toggle.active{opacity:1;pointer-events:auto}
+body.editing [contenteditable="true"]{outline:1px dashed rgba(237,28,36,.7);outline-offset:4px}
+</style>
+</head>
+<body>
+
+<!-- ===========================================
+     LOGOS OFICIALES LA METRO (SVG inline como símbolos, color por currentColor)
+     =========================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="lm-word" viewBox="0 0 287.57 62.28">
+    <g fill="currentColor">
+      <polygon points="0 0 0 61.01 5.42 61.01 5.42 0 0 0 0 0"/>
+      <path d="M185.94,3.6v13.26h-7.42v8.11h7.42v26.03c0,8.82,6.56,10.510,14.12,10.51,2.43,0,5.06-.07,7.13-.42v-9.52c-1.28.28-2.5.35-3.78.35-4.14,0-5.2-.99-5.2-5.08v-21.87h8.99v-8.11h-8.99V3.6h-12.27Z"/>
+      <path d="M85.94,15.66c-5.78,0-10.48,2.68-13.620,7.19h-.22v-6h-11.55v44.15h12.27v-25.6c0-8.67,5.85-10.23,8.28-10.23,7.78,0,7.49,5.92,7.49,11.07v24.76h12.19v-24.61c0-5.5,1.28-11.22,8.2-11.22s7.49,4.94,7.49,10.79v25.04h12.27v-29.55c0-11.43-6.85-15.8-16.33-15.8-6.21,0-10.84,3.53-13.41,7.33-2.430-5.29-7.49-7.33-13.05-7.33h0Z"/>
+      <path d="M238.92,15.66c-5.92,0-11.98,3.88-14.19,9.38h-.22v-8.18h-11.62v44.15h12.26v-19.96c0-7.76,3.14-14.11,12.13-14.11,1.43,0,3.21.14,4.35.42v-11.28c-.78-.28-1.85-.42-2.71-.42h0Z"/>
+      <path d="M155.91,15.66c-13.55,0-22.82,10.09-22.82,23.34s8.77,23.21,22.82,23.21c10.06,0,17.4-4.44,20.9-14.88h-10.84c-.79,2.75-4.71,5.71-9.63,5.71-6.85,0-10.62-3.53-10.98-11.21h32.24c.86-13.54-6.49-26.17-21.68-26.17ZM145.35,34.21c.22-3.46,2.42-9.45,10.2-9.45,5.99,0,8.63,3.24,9.77,9.45h-19.97Z"/>
+      <path d="M264.39,15.66c-13.98,0-23.04,9.24-23.04,23.34s9.06,23.21,23.04,23.21,23.18-9.24,23.18-23.21-9.06-23.34-23.18-23.34ZM264.39,53.04c-8.27,0-10.77-7.05-10.77-14.04s2.5-14.18,10.770-14.18,10.92,7.05,10.92,14.18-2.5,14.04-10.92,14.04Z"/>
+      <path d="M53.06,56.5c-2.21,0-3.21-1.2-3.21-3.24v-23.42c0-11.78-8.56-14.18-16.4-14.18-10.2,0-17.55,4.44-18.05,14.74h5.42c.21-7.12,5.2-10.23,11.91-10.23s11.7,1.83,11.7,9.03c0,4.87-2.49,5.5-6.99,6-11.77,1.41-23.96,1.83-23.96,14.17,0,8.89,6.78,12.91,14.98,12.91s12.410-3.24,16.19-8.96h.21c0,4.58.86,7.69,6.42,7.69,1.42,0,2.28-.07,3.5-.35v-4.51c-.43.14-1.140.35-1.71.35ZM44.43,43.94c.07,8.61-7.27,13.75-15.55,13.75-5.06,0-9.91-3.24-9.91-8.68,0-8.6,11.41-8.53,20.68-10.16,1.5-.28,3.85-.7,4.57-1.97h.21v7.05Z"/>
+    </g>
+  </symbol>
+  <symbol id="lm-dg" viewBox="0 0 157.61 82.32">
+    <g fill="currentColor">
+      <path d="M95.15,1.1l-.3.26c-3.99,3.47-6.76,8.24-7.81,13.42v.03s-.08.38-.08.38l.41.06c.58.08,1.16.17,1.73.25l.37.06.08-.36v-.02c.96-4.59,3.44-8.81,6.970-11.9l.3-.26-1.67-1.920Z"/>
+      <path d="M109.21,4.48l-.33.22c-4.49,2.99-7.91,7.44-9.62,12.55v.02s-.13.37-.13.37l.4.11c.42.12.84.24,1.26.37l.78.23.12-.36h.01c1.53-4.55,4.58-8.51,8.59-11.17l.33-.22-1.41-2.12Z"/>
+      <path d="M122.7,9.64l-.36.17c-4.92,2.42-8.94,6.48-11.31,11.41v.03s-.18.35-.18.35l.89.36c.37.15.75.3,1.12.46l.34.15.16-.34h.01c2.14-4.39,5.71-7.98,10.1-10.13l.35-.17-1.12-2.29Z"/>
+      <path d="M135.38,16.49l-.38.13c-5.18,1.75-9.7,5.24-12.71,9.8l-.02.04-.22.32.38.2c.53.28,1.040.56,1.55.84l.32.17.2-.3s.01-.02.02-.03c2.69-4.02,6.71-7.07,11.3-8.63l.37-.13-.81-2.41Z"/>
+      <path d="M147.02,24.91l-.38.08c-5.2,1.04-10.02,3.77-13.58,7.69l-.05.05-.26.3.39.25c.5.32.99.65,1.47.97l.28.19.23-.25s.03-.03.04-.04c3.2-3.44,7.35-5.74,11.98-6.66l.38-.08-.5-2.5Z"/>
+      <path d="M157.44,34.76l-.4.03c-4.96.34-9.67,2.13-13.62,5.18l-.08.06-.33.25.4.31c.5.39.97.76,1.43,1.12l.24.19.24-.18s.05-.04.08-.06c3.46-2.54,7.55-4.04,11.82-4.34l.39-.02-.17-2.54Z"/>
+      <path d="M68.23,1.41l-2.12-1.41-.21.33c-2.94,4.4-4.33,9.75-3.94,15.04v.05l.04.39.42-.08c.58-.1,1.15-.19,1.73-.28l.36-.06-.02-.36v-.03c-.31-4.67.94-9.38,3.53-13.27l.21-.32Z"/>
+      <path d="M53.96,3.46l-2.29-1.12-.17.36c-2.35,4.83-2.98,10.41-1.79,15.69v.03s.1.39.1.39l.4-.13c.38-.12.75-.23,1.13-.33l.91-.27-.08-.36v-.02c-1.03-4.67-.46-9.62,1.62-13.89l.17-.35Z"/>
+      <path d="M40.33,21.89h0c-1.73-4.57-1.85-9.59-.36-14.17l.12-.38-2.42-.79-.12.38c-1.68,5.16-1.53,10.82.43,15.95v.02s.15.36.15.36l.9-.39c.36-.16.72-.32,1.08-.48l.35-.14-.13-.36Z"/>
+      <path d="M29.05,27.31c-2.3-4.27-3.09-9.21-2.24-13.91l.07-.39-2.5-.46-.07.39c-.96,5.27-.07,10.81,2.51,15.59h.01s.18.35.18.35l.35-.19c.5-.29,1.02-.57,1.53-.85l.34-.19-.18-.34Z"/>
+      <path d="M18.32,33.77h-.01c-2.66-3.89-3.97-8.39-3.77-13.03l.02-.39-2.54-.11-.02.39c-.22,5.19,1.23,10.22,4.2,14.56h0s.23.33.23.33l.32-.22c.48-.33.96-.66,1.45-.99l.33-.22-.21-.32Z"/>
+      <path d="M8.15,41.15h-.01c-2.72-3.35-4.36-7.33-4.76-11.53l-.04-.39-2.53.24.04.39c.44,4.69,2.28,9.15,5.32,12.89l.25.3.3-.25c.44-.35.89-.72,1.36-1.1l.31-.25-.24-.3Z"/>
+      <path d="M92.64,34.51c0,2.78-2.26,5.03-5.04,5.030s-5.04-2.25-5.04-5.03,2.26-5.04,5.04-5.04,5.04,2.25,5.04,5.04Z"/>
+      <path d="M152.91,48.21s-34.23,34.11-76.45,34.11S0,48.21,0,48.21c0,0,2.21-2.2,6.17-5.46.1-.08.2-.17.3-.25.44-.36.89-.73,1.37-1.11.1-.08.21-.16.31-.24,2.27-1.8,4.97-3.83,8.05-5.95.11-.08.22-.15.33-.23.48-.33.96-.65,1.45-.98.11-.07.22-.15.34-.22,2.61-1.74,5.45-3.5,8.51-5.23.11-.06.23-.13.34-.19.5-.29,1.01-.57,1.53-.86.12-.06.23-.12.35-.18,2.82-1.53,5.81-3.02,8.94-4.41.12-.05.24-.11.36-.16.54-.24,1.07-.48,1.61-.71.12-.05.24-.1.37-.15,3.01-1.26,6.15-2.43,9.39-3.46.12-.04.25-.08.38-.12.55-.17,1.12-.33,1.68-.49.13-.04.26-.08.39-.11,3.18-.93,6.44-1.69,9.79-2.28.13-.02.27-.05.4-.07.57-.1,1.15-.2,1.73-.29.13-.02.27-.04.4-.06,2.09-.31,4.21-.54,6.36-.7v7.02c-12.81,2.46-22.48,13.72-22.48,27.25,0,15.34,12.41,27.76,27.76,27.76s27.76-12.42,27.76-27.76c0-13.53-9.68-24.79-22.49-27.25v-7.06c1.9.12,3.77.3,5.63.55.13.01.27.03.4.05.58.08,1.16.17,1.73.26l.39.06c3.31.53,6.55,1.24,9.7,2.09.13.03.25.07.38.1.57.16,1.13.33,1.69.49.13.04.26.08.38.12,3.22.96,6.32,2.06,9.32,3.27.12.04.24.09.36.14.55.22,1.1.44,1.63.67.12.05.24.1.36.16,3.11,1.32,6.08,2.75,8.9,4.24.12.06.23.12.35.18.52.27,1.03.55,1.55.83.12.06.24.13.35.19,3.03,1.67,5.88,3.38,8.49,5.07.12.07.23.15.34.22.5.32.99.65,1.48.97.11.07.22.15.33.23,3.08,2.06,5.830,4.06,8.18,5.88.11.08.21.17.32.25.49.39.96.76,1.43,1.13.1.08.21.17.31.25,4.81,3.86,7.51,6.55,7.51,6.55Z"/>
+    </g>
+    <path style="fill:var(--ray,#D90000)" d="M82.1,1.27c-3.15,3.580-5.02,8.05-5.4,12.74h-1.75c.37-5.12,2.4-10,5.83-13.9l1.32,1.16Z"/>
+  </symbol>
+  <symbol id="heart" viewBox="0 0 24 22"><path fill="currentColor" d="M12 21.6 10.3 20C4.2 14.6 0 10.9 0 6.4 0 2.8 2.8 0 6.4 0 8.5 0 10.5 1 12 2.5 13.5 1 15.5 0 17.6 0 21.2 0 24 2.8 24 6.4c0 4.5-4.2 8.2-10.3 13.6L12 21.6Z"/></symbol>
+</svg>
+
+<div class="deck-viewport" id="viewport">
+<div class="deck-stage" id="stage">
+
+<!-- =========================================================
+     00 · PORTADA — solo tipografía, a todo el ancho
+     ========================================================= -->
+<section class="slide red" data-title="Portada" data-n="(00)" data-k="Charla abierta">
+  <h1 class="d up cover ti" style="position:absolute;left:58px;right:40px;top:150px;font-size:258px;line-height:.82;letter-spacing:-.055em;font-weight:800">
+    <span class="mask"><span data-a="up">Nadie</span></span>
+    <span class="mask"><span data-a="up" data-d=".08">Contrata</span></span>
+    <span class="mask"><span data-a="up" data-d=".16">Lo que <span class="tp">no ve.</span></span></span>
+  </h1>
+  <div class="foot ti" data-a="rise" data-d=".7" style="font-size:20px;grid-template-columns:1.6fr 1fr 1fr auto">
+    <p style="font:600 34px/1.15 var(--sans);letter-spacing:-.02em;text-transform:none;max-width:640px">Por qué mostrar lo que hacés en redes abre más puertas de las que cierra.</p>
+    <p><b>Julian Giordana</b><br>@dzn_gio</p>
+    <p>[Fecha]<br>Charla + conversatorio</p>
+    <svg class="lmdg" style="width:150px;height:78px;color:var(--paper);--ray:var(--ink)" aria-label="La Metro Diseño Gráfico"><use href="#lm-dg"/></svg>
+  </div>
+</section>
+
+<!-- 0.1 PREGUNTA DE ARRANQUE — crosshair rojo + texto fantasma (ref bleibtgleich) -->
+<section class="slide paper" data-title="¿Quién hizo algo creativo?" data-n="(0.1)" data-k="Arranquemos">
+  <div class="vline" data-a="liney" data-d=".1" style="left:820px"></div>
+  <div class="hline" data-a="line" data-d=".2" style="top:430px"></div>
+  <p class="ghost d up" style="left:40px;bottom:120px;font-size:330px">Creativo</p>
+  <div class="pad" style="justify-content:flex-end">
+    <h1 class="d tr" data-a="chars" data-d=".3" style="font-size:190px;max-width:1700px">¿Quién hizo algo creativo esta semana?</h1>
+    <p class="hand m ti" data-a="rise" data-d="1" style="margin-top:44px;font-size:26px"><i></i>Levantá la mano</p>
+  </div>
+</section>
+
+<!-- 0.2 -->
+<section class="slide ink" data-title="¿Y quién lo subió?" data-n="(0.2)" data-k="Y ahora">
+  <div class="cols12"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:280px">¿Y quién lo subió?</h1>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <p class="hand m" data-a="rise" data-d=".7" style="font-size:24px"><i></i>Bajen las manos los que no</p>
+      <p class="d tr" data-a="lines" data-d="1" style="font-size:120px;text-align:right">Ahí empieza<br>esta charla.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 0.3 BIO — retrato + letras verticales (ref RUE) + filas numeradas (ref SEKO) -->
+<section class="slide paper" data-title="Quién te habla" data-n="(0.3)" data-k="Quién te habla" data-nochrome>
+  <div data-a="clipup" style="position:absolute;left:0;top:0;width:700px;height:1080px;overflow:hidden;background:#2a2a2a"><img src="img/SLIDE%204/SLIDE%204.jpg" alt="Julian Giordana hablando con micrófono" style="width:100%;height:100%;object-fit:cover;object-position:40% 30%;display:block"></div>
+  <div style="position:absolute;left:800px;right:64px;top:42px;display:flex;justify-content:space-between" class="m" data-a="fade"><span>(0.3) Quién te habla</span><svg style="height:24px;width:111px;color:var(--red)"><use href="#lm-word"/></svg></div>
+  <div style="position:absolute;left:800px;right:64px;top:170px;bottom:64px;display:flex;flex-direction:column;justify-content:space-between">
+    <div>
+      <h1 class="d" data-a="lines" data-d=".2" style="font-size:144px">Julian<br>Giordana</h1>
+      <p class="d tr" data-a="rise" data-d=".5" style="font-size:64px;margin-top:22px">@dzn_gio</p>
+    </div>
+    <div data-a="stagger" data-d=".6">
+      <div style="display:grid;grid-template-columns:70px 1fr auto;align-items:baseline;border-top:1px solid;padding:14px 0"><span class="m">01</span><span class="d tr" style="font-size:56px">6 años</span><span class="m">diseñando</span></div>
+      <div style="display:grid;grid-template-columns:70px 1fr auto;align-items:baseline;border-top:1px solid;padding:14px 0"><span class="m">02</span><span class="d" style="font-size:56px">Música</span><span class="m">dirección de arte</span></div>
+      <div style="display:grid;grid-template-columns:70px 1fr auto;align-items:baseline;border-top:1px solid;padding:14px 0"><span class="m">03</span><span class="d" style="font-size:56px">Adobe</span><span class="m">Latinoamérica</span></div>
+      <div style="display:grid;grid-template-columns:70px 1fr auto;align-items:baseline;border-top:1px solid;border-bottom:1px solid;padding:14px 0"><span class="m">04</span><span class="d" style="font-size:56px">Docente</span><span class="m">La Metro · dzngio.com</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 0.4 MI AÑO EN INSTAGRAM — captura real del perfil @dzn_gio (posteos 2026), el feed baja solo -->
+<section class="slide red" data-title="Mi año en Instagram" data-n="(0.4)" data-k="Mi año">
+  <div class="pad" style="right:860px;justify-content:space-between">
+    <div style="display:flex;align-items:flex-end;gap:28px">
+      <p class="d ti" style="font-size:300px;line-height:.76;letter-spacing:-.06em"><span data-a="count" data-to="59" data-d=".2">59</span></p>
+      <p class="m" data-a="rise" data-d=".5" style="padding-bottom:8px">Posteos<br>en 2026<br><span class="o75">(36 en 2025)</span></p>
+    </div>
+    <div>
+      <h1 class="d" data-a="lines" data-d=".3" style="font-size:132px">Este año<br>no paré de<br>mostrar.</h1>
+      <p class="d ti" data-a="rise" data-d=".8" style="font-size:120px;margin-top:34px;letter-spacing:-.055em">@dzn_gio</p>
+    </div>
+  </div>
+  <div class="phone" data-a="up" data-d=".35" aria-label="Perfil de Instagram @dzn_gio">
+    <div class="ig">
+      <div class="ig-bar">
+        <div class="ig-status"><b>9:41</b><span class="ig-island"></span><span class="ig-sig"><i></i><i></i><i></i><i></i><em></em></span></div>
+        <div class="ig-nav"><span>&lsaquo;</span><b>dzn_gio <svg class="vf" viewBox="0 0 40 40"><path fill="#0095F6" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Z"/><path fill="#fff" d="m17.4 25.9-5.7-5.6 1.9-1.9 3.8 3.7 8.4-8.4 1.9 1.9z"/></svg></b><span class="ig-dots">&bull;&bull;&bull;</span></div>
+      </div>
+      <div class="ig-view" data-a="igfeed" data-d="2.4">
+        <div class="ig-scroll">
+          <div class="ig-head">
+            <div class="ig-row">
+              <div class="ig-av"><img src="img/ig2026/dzn-avatar.jpg" alt=""></div>
+              <div class="ig-stats"><p><b>233</b>publicaciones</p><p><b>19,3 mil</b>seguidores</p><p><b>1348</b>seguidos</p></div>
+            </div>
+            <p class="ig-name">GIO®</p>
+            <p class="ig-bio"><span class="cat">Diseñador gráfico</span><br>Docente de Photoshop - Figma<br>Tec. en Diseño Gráfico <span class="at">@lametrocordoba</span><br>Cordoba, AR<br>Creando <span class="at">@ctrlgagrupar</span><br><span class="lk">linktr.ee/dzngio y 2 más</span></p>
+            <div class="ig-btns"><span class="b1">Seguir</span><span>Mensaje</span></div>
+            
+            <div class="ig-tabs"><span class="on"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM10 8.5l6 3.5-6 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></span></div>
+          </div>
+          <div class="iggrid"><i><img src="img/ig2026/dzn-2026-00-DflfOZKIfU_.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-01-DfgOF5TN5he.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-02-DfdSzTKoYd0.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-03-DfYYdfctwet.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-04-De7htCGNx2C.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-05-De2Omq8oBB8.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-06-DelFIlxkVVE.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-07-Dej9-JmRgvR.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-08-DeiLrQPSiUi.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-09-DeVCqxptw-y.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-10-DeHqJENxwn_.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-11-DePtPi_oL6o.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-12-Dd68YLzN9zB.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-13-Dd-PF2YNtyO.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-14-Dd2LHIPkTm0.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-15-Dd9LpoTHMWc.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-16-Da-zKdyEalY.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-17-Dct55LjIGnJ.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-18-DbT3mbzoIvk.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-19-Ddj9s_6pMaE.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-20-Ddj3WDCoHWj.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-21-DdhXStDlXST.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-22-DdfM07fRSf0.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-23-Ddb7TgxEe45.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-24-DdZWU0qRaDP.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-25-DdXctlAxS99.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-26-DdUQcD2R2ig.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-27-DdP1-R6xNwq.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-28-DcmjHZOxQJm.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-29-Dcjb4SmNcRO.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-30-Db_6T-KEdSE.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-31-Dbt4p4ZkSfM.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-32-Da_5YxtEUTL.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-33-Da88wgwkRU5.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-34-Da3FB61Edux.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-35-Daq9Y-NEb8G.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-36-DajRA8ZEbYm.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-37-DagIFSGERbe.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-38-DZ-y5flkZVF.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-39-DZ5jO65kZc4.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-40-DZrE1djFx78.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-41-DZoW1HCEXrr.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-42-DZdKVq-kfxl.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-43-DZV0YYyEXXW.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-44-DZOJiNdkUc3.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-45-DZLHDlnxHDD.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-46-DYu87vIEfCI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-47-DYkyRHWEUZe.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-48-DYfmIojkWZI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-49-DYAu_rDkUK-.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-50-DW4ZXVlke1J.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-51-DWcRDPHkXDa.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-52-DVR0SnxkeBo.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-53-DUqyuTNkV7H.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-54-DT8iAUmkSPo.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-55-DToMSpmklD_.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-56-DTVzwCckcRI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-57-DTI_TXEEU4X.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-58-DS_DJ-2EVL6.jpg" alt="" decoding="async"></i></div>
+          <div class="iggrid dup"><i><img src="img/ig2026/dzn-2026-00-DflfOZKIfU_.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-01-DfgOF5TN5he.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-02-DfdSzTKoYd0.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-03-DfYYdfctwet.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-04-De7htCGNx2C.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-05-De2Omq8oBB8.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-06-DelFIlxkVVE.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-07-Dej9-JmRgvR.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-08-DeiLrQPSiUi.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-09-DeVCqxptw-y.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-10-DeHqJENxwn_.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-11-DePtPi_oL6o.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-12-Dd68YLzN9zB.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-13-Dd-PF2YNtyO.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-14-Dd2LHIPkTm0.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-15-Dd9LpoTHMWc.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-16-Da-zKdyEalY.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-17-Dct55LjIGnJ.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-18-DbT3mbzoIvk.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-19-Ddj9s_6pMaE.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-20-Ddj3WDCoHWj.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-21-DdhXStDlXST.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-22-DdfM07fRSf0.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-23-Ddb7TgxEe45.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-24-DdZWU0qRaDP.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-25-DdXctlAxS99.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-26-DdUQcD2R2ig.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-27-DdP1-R6xNwq.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-28-DcmjHZOxQJm.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-29-Dcjb4SmNcRO.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-30-Db_6T-KEdSE.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-31-Dbt4p4ZkSfM.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-32-Da_5YxtEUTL.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-33-Da88wgwkRU5.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-34-Da3FB61Edux.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-35-Daq9Y-NEb8G.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-36-DajRA8ZEbYm.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-37-DagIFSGERbe.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-38-DZ-y5flkZVF.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-39-DZ5jO65kZc4.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-40-DZrE1djFx78.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-41-DZoW1HCEXrr.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-42-DZdKVq-kfxl.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-43-DZV0YYyEXXW.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-44-DZOJiNdkUc3.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-45-DZLHDlnxHDD.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-46-DYu87vIEfCI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-47-DYkyRHWEUZe.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-48-DYfmIojkWZI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-49-DYAu_rDkUK-.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-50-DW4ZXVlke1J.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-51-DWcRDPHkXDa.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-52-DVR0SnxkeBo.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-53-DUqyuTNkV7H.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-54-DT8iAUmkSPo.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-55-DToMSpmklD_.jpg" alt="" decoding="async"><svg class="rl" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5v11a3.5 3.5 0 0 1-3.5 3.5h-11A3.5 3.5 0 0 1 3 17.5zM10 8.7v6.6l5.5-3.3z"/></svg></i><i><img src="img/ig2026/dzn-2026-56-DTVzwCckcRI.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-57-DTI_TXEEU4X.jpg" alt="" decoding="async"></i><i><img src="img/ig2026/dzn-2026-58-DS_DJ-2EVL6.jpg" alt="" decoding="async"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 0.5 ÍNDICE — lista a la derecha con superíndices (ref Portfolio template). Clic = ir al capítulo -->
+<section class="slide ink" data-title="Índice" data-n="(0.5)" data-k="Hoy">
+  <div class="pad" style="justify-content:flex-end">
+    <div class="idx d up" data-a="stagger" data-d=".2">
+      <button data-goto="ch1"><span class="sup tr">01.</span>El miedo</button>
+      <button data-goto="ch2"><span class="sup tr">02.</span>Lo que pasa cuando mostrás</button>
+      <button data-goto="ch3"><span class="sup tr">03.</span>Cómo mostrar</button>
+      <button data-goto="ch4"><span class="sup tr">04.</span>Tu turno</button>
+    </div>
+    <p class="m dim" data-a="fade" data-d=".9" style="position:absolute;left:0;top:0;max-width:520px">No es un monólogo:<br>vas a hablar vos también.</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     01 · CAPÍTULO — número gigante + pila cinética
+     ========================================================= -->
+<section class="slide red" id="ch1" data-title="01 El miedo" data-n="Capítulo" data-k="01 / 04" data-sec="El miedo">
+  <p class="chnum d c" data-a="clipup">01</p>
+  <h1 class="chtitle d up" data-a="lines" data-d=".25" style="top:392px;font-size:234px">El<br>miedo</h1>
+</section>
+
+<!-- 1.1 VOTACIÓN — columnas clickeables -->
+<section class="slide paper" data-title="¿Qué te frena? · votación" data-n="(1.1)" data-k="Votación">
+  <div class="pad" style="gap:40px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <h1 class="d" data-a="chars" data-d=".15" style="font-size:170px">¿Qué te frena?</h1>
+      <p class="m tr" data-a="rise" data-d=".6" style="text-align:right">Tocá la columna<br>por cada mano alzada</p>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;min-height:0" data-a="stagger" data-d=".4" data-group="vote">
+      <button class="vote" aria-label="Votar A"><span class="fillv"></span><span class="L d c">A</span><span class="q">“¿Qué van a decir?”</span><span class="n"><span>Votos</span><span class="vc">0</span></span></button>
+      <button class="vote" aria-label="Votar B"><span class="fillv"></span><span class="L d c">B</span><span class="q">“No es tan bueno.”</span><span class="n"><span>Votos</span><span class="vc">0</span></span></button>
+      <button class="vote" aria-label="Votar C"><span class="fillv"></span><span class="L d c">C</span><span class="q">“Me lo van a copiar.”</span><span class="n"><span>Votos</span><span class="vc">0</span></span></button>
+      <button class="vote" aria-label="Votar D"><span class="fillv"></span><span class="L d c">D</span><span class="q">“No tengo tiempo.”</span><span class="n"><span>Votos</span><span class="vc">0</span></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- 1.2 A — No sos tan importante -->
+<section class="slide paper" data-title="A · No sos tan importante" data-n="(1.2)" data-k="Respuesta A">
+  <p class="d c tr" data-a="clipup" style="position:absolute;right:64px;top:120px;font-size:380px;line-height:.8">A</p>
+  <div class="pad" style="justify-content:flex-end">
+    <h1 class="d up" data-a="chars" data-d=".2" style="font-size:236px;line-height:.82">No sos tan importante.</h1>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:44px">
+      <p class="body" data-a="rise" data-d=".8" style="max-width:780px">Nadie te mira tanto como creés. Y eso es una buena noticia: te deja probar.</p>
+      <p class="d tr" data-a="rise" data-d="1" style="font-size:84px">(y eso te libera)</p>
+    </div>
+  </div>
+</section>
+
+<!-- 1.3 B — Nadie empezó bueno -->
+<section class="slide paper" data-title="B · Nadie empezó bueno" data-n="(1.3)" data-k="Respuesta B" data-nochrome>
+  <div data-a="clipup" style="position:absolute;left:0;top:0;width:1000px;height:1080px;background:#F4F4F4;display:flex;align-items:center;justify-content:center"><img src="img/SLIDE%2010/imgi_53_649338555_18093014879044226_7472081761967917231_n.jpg" alt="Uno de mis primeros posteos: GIO DESIGNS" style="width:1000px;height:1000px;object-fit:contain;display:block"><p class="m" style="position:absolute;left:40px;bottom:40px;color:var(--mid)">Uno de mis primeros posteos</p></div>
+  <div style="position:absolute;left:1064px;right:64px;top:42px;display:flex;justify-content:space-between" class="m"><span>(1.3) Respuesta B</span><svg style="height:24px;width:111px;color:var(--red)"><use href="#lm-word"/></svg></div>
+  <p class="d c tr" data-a="clipup" data-d=".2" style="position:absolute;left:1064px;top:118px;font-size:320px;line-height:.8">B</p>
+  <div style="position:absolute;left:1064px;right:64px;bottom:96px">
+    <h1 class="d" style="font-size:124px"><span class="mask"><span data-a="up" data-d=".3">Nadie empezó bueno.</span></span><span class="mask tr"><span data-a="up" data-d=".6">Empezaron públicos.</span></span></h1>
+  </div>
+</section>
+
+<!-- 1.4 C — Te pueden copiar (eco de copias) -->
+<section class="slide ink" data-title="C · No el criterio" data-n="(1.4)" data-k="Respuesta C">
+  <p class="d c tr" data-a="clipup" style="position:absolute;right:64px;top:120px;font-size:380px;line-height:.8">C</p>
+  <div class="pad" style="justify-content:flex-end">
+    <h1 class="d" data-a="lines" data-d=".2" style="font-size:176px">Te pueden copiar la pieza.</h1>
+    <h1 class="d tr" data-a="chars" data-d=".9" style="font-size:176px;margin-top:60px">No el criterio.</h1>
+    <p class="m" data-a="rise" data-d="1.3" style="margin-top:40px;font-size:24px">Copian lo que ven. Contratan a quien lo hizo.</p>
+  </div>
+</section>
+
+<!-- 1.5 D — 15' (contador) -->
+<section class="slide red" data-title="D · 15 minutos" data-n="(1.5)" data-k="Respuesta D">
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d ti" data-a="lines" data-d=".2" style="font-size:120px;max-width:1400px">Ya lo hiciste.<br>Solo falta <span class="tp">mostrarlo.</span></h1>
+  </div>
+  <p class="d c tp" style="position:absolute;left:52px;bottom:120px;font-size:720px;line-height:.76"><span data-a="count" data-to="15" data-d=".4">15</span>'</p>
+  <p class="d ti" data-a="rise" data-d=".9" style="position:absolute;right:64px;bottom:120px;font-size:60px;text-align:right;line-height:1">es lo que tarda<br>un posteo de proceso.</p>
+</section>
+
+<!-- 1.6 CONVERSATORIO -->
+<section class="slide red" data-title="¿Te arrepentiste?" data-n="(1.6)" data-k="Conversemos">
+  <p class="d c o14" style="position:absolute;right:64px;bottom:176px;font-size:1000px;line-height:.76;color:var(--ink)" data-a="clipup">?</p>
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:176px;max-width:1650px">¿Alguna vez no subiste algo y después te arrepentiste?</h1>
+    <p class="hand m ti" data-a="rise" data-d="1" style="font-size:26px;align-self:flex-end"><i></i>Contalo · micrófono abierto</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     02 · CAPÍTULO
+     ========================================================= -->
+<section class="slide red" id="ch2" data-title="02 Lo que pasa cuando mostrás" data-n="Capítulo" data-k="02 / 04" data-sec="Lo que pasa cuando mostrás">
+  <p class="chnum d c" data-a="clipup">02</p>
+  <h1 class="chtitle d up" data-a="lines" data-d=".25" style="top:400px;font-size:113px">Lo que<br>pasa<br>cuando<br>mostrás</h1>
+</section>
+
+<!-- 2.1 BALANZA -->
+<section class="slide paper" data-title="3 desventajas vs ∞ oportunidades" data-n="(2.1)" data-k="La balanza" data-nochrome>
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:.8fr 1.2fr">
+    <div style="padding:42px 64px 64px;display:flex;flex-direction:column;justify-content:space-between">
+      <p class="m">(2.1) Desventajas</p>
+      <p class="d c" data-a="clipup" data-d=".1" style="font-size:430px;line-height:.78">3</p>
+      <div data-a="stagger" data-d=".4">
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Críticas</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Comparación</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;border-bottom:1px solid;padding:10px 0">Tiempo</p>
+      </div>
+    </div>
+    <div class="tp" data-a="clipx" style="background:var(--red);padding:42px 64px 64px;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;justify-content:space-between"><p class="m">Oportunidades</p><svg style="height:24px;width:111px;color:var(--paper)"><use href="#lm-word"/></svg></div>
+      <p class="d c" data-a="clipup" data-d=".5" style="font-size:430px;line-height:.78">∞</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;column-gap:48px" data-a="stagger" data-d=".8">
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Clientes</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Marcas</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Colaboraciones</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;padding:10px 0">Comunidad</p>
+        <p class="d" style="font-size:52px;border-top:1px solid;border-bottom:1px solid;padding:10px 0">Alumnos</p>
+        <p class="d ti" style="font-size:52px;border-top:1px solid;border-bottom:1px solid;padding:10px 0">Tu propia voz</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2.2 PORTFOLIO — grilla tipo feed con trabajos reales -->
+<section class="slide paper" data-title="Tu perfil es un portfolio" data-n="(2.2)" data-k="Portfolio 24/7">
+  <div class="pad" style="flex-direction:row;gap:72px;align-items:flex-end">
+    <div style="width:880px;flex:none">
+      <p class="m tr" data-a="rise" data-d=".1" style="margin-bottom:28px">↘ Abierto las 24 horas</p>
+      <h1 class="d" data-a="lines" data-d=".2" style="font-size:128px">Tu perfil es un portfolio <span class="tr">que trabaja mientras dormís.</span></h1>
+    </div>
+    <div class="orbit" data-a="orbit" data-d=".3" aria-hidden="true">
+      <div class="orb"><img src="img/alta/s18-imagen-14.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s17-portada-mi-se-ora.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-15.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-post-1-ysy.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-17.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s17-naiki-posteo-1.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-odyssey-poster-a3-final.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-1.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-11.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-3.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-feid-bootleg-post-1.jpg" alt=""></div>
+      <div class="orb"><img src="img/alta/s18-imagen-18.jpg" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2.3 LO QUE ME TRAJO -->
+<section class="slide ink" data-title="Lo que me trajo mostrar" data-n="(2.3)" data-k="Mi caso">
+  <div class="pad" style="gap:44px">
+    <h1 class="d" data-a="chars" data-d=".15" style="font-size:132px">Lo que me trajo mostrar lo que hago</h1>
+    <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;min-height:0" data-a="stagger" data-d=".5">
+      <div style="display:flex;flex-direction:column;gap:14px;min-height:0"><div class="duo" style="flex:1"><img src="img/alta/s17-naiki-posteo-1.jpg" alt="Portada NAIKI de Nicki Nicole"></div><p class="m" style="display:flex;justify-content:space-between;border-top:1px solid;padding-top:10px"><span>01</span><span style="font:700 52px/1 var(--sans);letter-spacing:-.04em;text-transform:none">Artistas</span></p></div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-height:0"><div class="duo" style="flex:1"><img src="img/alta/s16-adobe-colaboracion.jpg" alt="Colaboración con Adobe"></div><p class="m" style="display:flex;justify-content:space-between;border-top:1px solid;padding-top:10px"><span>02</span><span style="font:700 52px/1 var(--sans);letter-spacing:-.04em;text-transform:none">Adobe</span></p></div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-height:0"><div class="duo" style="flex:1"><img src="img/alta/s16-alumnos.jpg" alt="Clase con alumnos"></div><p class="m" style="display:flex;justify-content:space-between;border-top:1px solid;padding-top:10px"><span>03</span><span style="font:700 52px/1 var(--sans);letter-spacing:-.04em;text-transform:none">Alumnos</span></p></div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-height:0"><div class="duo" style="flex:1"><img src="img/alta/s16-comunidad.jpg" alt="Encuentro de la comunidad"></div><p class="m" style="display:flex;justify-content:space-between;border-top:1px solid;padding-top:10px"><span>04</span><span class="tr" style="font:700 52px/1 var(--sans);letter-spacing:-.04em;text-transform:none">Comunidad</span></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2.4 PARA ARTISTAS — hover destaca una pieza -->
+<section class="slide paper" data-title="Lo que hice para artistas" data-n="(2.4)" data-k="Para otros">
+  <div class="pad" style="gap:40px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <h1 class="d" data-a="chars" data-d=".15" style="font-size:132px">Lo que hice <span class="tr">para artistas</span></h1>
+      <p class="hand m tr" data-a="rise" data-d=".8" style="font-size:24px;padding-bottom:12px"><i></i>¿Cuál viste antes?</p>
+    </div>
+    <div class="work" data-a="stagger" data-d=".4">
+      <figure><img src="img/alta/s17-saturacion-pop-finales-nuevas.jpg" alt="Saturación Pop — YSY A y Evlay"><figcaption><b>YSY A × Evlay</b><span>Saturación Pop</span></figcaption></figure>
+      <figure><img src="img/alta/s17-naiki-posteo-1.jpg" alt="NAIKI — Nicki Nicole"><figcaption><b>Nicki Nicole</b><span>NAIKI</span></figcaption></figure>
+      <figure><img src="img/alta/s17-portada-mi-se-ora.jpg" alt="Mi señora — Khea, Duki, La Joaqui"><figcaption><b>Khea · Duki · La Joaqui</b><span>Mi señora</span></figcaption></figure>
+      <figure><img src="img/alta/s17-payaso-portada-1-300dpi.jpg" alt="Portada Payaso"><figcaption><b>[Artista]</b><span>Payaso</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 2.5 POR DIVERSIÓN — marquesina -->
+<section class="slide ink" data-title="Nadie me lo pidió" data-n="(2.5)" data-k="Por diversión">
+  <div class="pad" style="left:0;right:0;gap:44px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:0 64px">
+      <h1 class="d" style="font-size:140px"><span class="mask"><span data-a="up" data-d=".15">Nadie me lo pidió.</span></span><span class="mask tr"><span data-a="up" data-d=".4">Lo hice igual.</span></span></h1>
+      <p class="m o75" data-a="fade" data-d=".8" style="max-width:480px;text-align:right">Pósters ficticios, homenajes, covers alternativos. Lo que hacés sin cliente dice quién sos.</p>
+    </div>
+    <div class="marq" data-a="fade" data-d=".5" style="flex:1;min-height:0">
+      <div class="track">
+        <img src="img/alta/s18-imagen-14.jpg" alt="" loading="eager"><img src="img/alta/s18-post-1-ysy.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-1.jpg" alt="" loading="eager"><img src="img/alta/s18-odyssey-poster-a3-final.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-15.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-3.jpg" alt="" loading="eager"><img src="img/alta/s18-5202-duki-post-9.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-17.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-11.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-16.jpg" alt="" loading="eager"><img src="img/alta/s18-feid-bootleg-post-1.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-18.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-12.jpg" alt="" loading="eager"><img src="img/alta/s18-nk-post-1.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-4.jpg" alt="" loading="eager"><img src="img/alta/s18-post-4-anm.jpg" alt="" loading="eager"><img src="img/alta/s18-2.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-13.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-9.jpg" alt="" loading="eager"><img src="img/alta/s18-5202-duki-post-8.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-5.jpg" alt="" loading="eager"><img src="img/alta/s18-post-1.jpg" alt="" loading="eager"><img src="img/alta/s18-nk-post-5.jpg" alt="" loading="eager"><img src="img/alta/s18-5202-duki-post-1.jpg" alt="" loading="eager"><img src="img/alta/s18-4.jpg" alt="" loading="eager"><img src="img/alta/s18-5202-duki-post-7.jpg" alt="" loading="eager"><img src="img/alta/s18-imagen-14.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-post-1-ysy.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-1.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-odyssey-poster-a3-final.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-15.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-3.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-5202-duki-post-9.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-17.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-11.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-16.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-feid-bootleg-post-1.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-18.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-12.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-nk-post-1.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-4.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-post-4-anm.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-2.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-13.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-9.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-5202-duki-post-8.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-imagen-5.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-post-1.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-nk-post-5.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-5202-duki-post-1.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-4.jpg" alt="" aria-hidden="true"><img src="img/alta/s18-5202-duki-post-7.jpg" alt="" aria-hidden="true">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2.6 PREGUNTA -->
+<section class="slide red" data-title="¿Qué harías sin encargo?" data-n="(2.6)" data-k="Pensalo">
+  <p class="d c o14" style="position:absolute;right:64px;bottom:176px;font-size:1000px;line-height:.76;color:var(--ink)" data-a="clipup">?</p>
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:190px;max-width:1600px">¿Qué harías si nadie te lo encargara?</h1>
+    <p class="hand m ti" data-a="rise" data-d="1" style="font-size:26px;align-self:flex-end"><i></i>Esa es tu próxima pieza</p>
+  </div>
+</section>
+
+<!-- 2.7 YOUTUBE — contadores + miniaturas -->
+<section class="slide paper" data-title="Subo lo que aprendo · YouTube" data-n="(2.7)" data-k="Enseñar en público">
+  <div class="pad" style="gap:40px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <h1 class="d" data-a="chars" data-d=".15" style="font-size:136px">Subo lo que aprendo</h1>
+      <div style="display:flex;gap:56px" data-a="rise" data-d=".4">
+        <div><p class="d c tr" style="font-size:150px;line-height:.8"><span data-a="count" data-to="148" data-d=".5">148</span></p><p class="m" style="margin-top:10px">videos</p></div>
+        <div><p class="d c tr" style="font-size:150px;line-height:.8"><span data-a="count" data-to="21.3" data-dec="1" data-d=".6">21,3</span>K</p><p class="m" style="margin-top:10px">suscriptores</p></div>
+      </div>
+    </div>
+    <div class="yt" data-a="pops" data-d=".5" style="margin-top:auto">
+      <a href="https://youtu.be/vMqxv5urXUc" target="_blank" rel="noopener"><img src="img/yt_vMqxv5urXUc.jpg" alt="No sos tan importante"></a>
+      <a href="https://youtu.be/BwrfnJehzgg" target="_blank" rel="noopener"><img src="img/yt_BwrfnJehzgg.jpg" alt="Vlog Salta — Dementes Gráficas"></a>
+      <a href="https://youtu.be/emGxWho9QEU" target="_blank" rel="noopener"><img src="img/yt_emGxWho9QEU.jpg" alt="Nadie te va a dar permiso"></a>
+      <a href="https://youtu.be/fUMh-mUylbA" target="_blank" rel="noopener"><img src="img/yt_fUMh-mUylbA.jpg" alt="Excusas para no crear"></a>
+      <a href="https://youtu.be/Pi-KznSv3To" target="_blank" rel="noopener"><img src="img/yt_Pi-KznSv3To.jpg" alt="Tipografía experimental con ketchup"></a>
+      <a href="https://youtu.be/D9VaNQH7QDk" target="_blank" rel="noopener"><img src="img/yt_D9VaNQH7QDk.jpg" alt="Gráficos vintage en Photoshop"></a>
+      <a href="https://youtu.be/RZSIlumI88g" target="_blank" rel="noopener"><img src="img/yt_RZSIlumI88g.jpg" alt="Tarifario 2026"></a>
+      <a href="https://youtu.be/yF4nqonA-e4" target="_blank" rel="noopener"><img src="img/yt_yF4nqonA-e4.jpg" alt="Crecer como diseñador gráfico 2026"></a>
+    </div>
+  </div>
+</section>
+
+<!-- 2.8 DM — escribiendo… y mensaje tipeado -->
+<section class="slide paper" data-title="Ese mensaje no llega a un perfil vacío" data-n="(2.8)" data-k="Bandeja de entrada">
+  <div class="pad" style="justify-content:space-between">
+    <div class="dm" data-a="pop" data-d=".1">
+      <p class="m" style="opacity:.6;margin-bottom:16px;font-size:18px">Mensaje nuevo · ahora</p>
+      <p style="font-size:70px;font-weight:600;letter-spacing:-.035em;line-height:1.06;min-height:1.06em" data-a="type" data-d=".5">“Hola! Vi lo que subiste, ¿hacés trabajos por encargo?”</p>
+    </div>
+    <h1 class="d" data-a="lines" data-d="2.6" style="font-size:150px;align-self:flex-end;text-align:right">Ese mensaje no llega<br><span class="tr">a un perfil vacío.</span></h1>
+  </div>
+</section>
+
+<!-- 2.9 PREGUNTA CON ENCUESTA -->
+<section class="slide red" data-title="¿Te contrata? · encuesta" data-n="(2.9)" data-k="Pensalo">
+  <p class="d c o14" style="position:absolute;right:64px;bottom:176px;font-size:1000px;line-height:.76;color:var(--ink)" data-a="clipup">?</p>
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:176px;max-width:1650px">Si un cliente entra hoy a tu perfil, ¿te contrata?</h1>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <p class="m ti" data-a="fade" data-d="1">Tocá para contar las manos</p>
+      <div style="display:flex;gap:20px" data-a="stagger" data-d=".8">
+        <button class="poll">Sí <em>0</em></button>
+        <button class="poll">No <em>0</em></button>
+        <button class="poll" style="background:var(--paper);color:var(--red);border-color:var(--paper)">No tengo perfil <em>0</em></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     03 · CAPÍTULO
+     ========================================================= -->
+<section class="slide red" id="ch3" data-title="03 Cómo mostrar" data-n="Capítulo" data-k="03 / 04" data-sec="Cómo mostrar">
+  <p class="chnum d c" data-a="clipup">03</p>
+  <h1 class="chtitle d up" data-a="lines" data-d=".25" style="top:392px;font-size:234px">Cómo<br>mostrar</h1>
+</section>
+
+<!-- 3.1 PROCESO — boceto → proceso → resultado (Saturación Pop) -->
+<section class="slide paper" data-title="Mostrá el proceso" data-n="(3.1)" data-k="Mostrá el proceso">
+  <div class="pad" style="gap:40px">
+    <h1 class="d" data-a="lines" data-d=".15" style="font-size:104px">El final lo ve cualquiera.<br><span class="tr">El proceso te hace único.</span></h1>
+    <div class="steps" data-a="stagger" data-d=".5">
+      <div class="step"><div class="sim"><img src="img/SLIDE%2025/web/boceto.jpg" alt="BOCETO"></div><p class="m"><span>Paso 01</span><b>BOCETO</b></p></div>
+      <div class="sarr d tr" aria-hidden="true">→</div>
+      <div class="step"><div class="sim"><img src="img/SLIDE%2025/web/proceso.jpg" alt="PROCESO"></div><p class="m"><span>Paso 02</span><b>PROCESO</b></p></div>
+      <div class="sarr d tr" aria-hidden="true">→</div>
+      <div class="step"><div class="sim"><img src="img/SLIDE%2025/web/resultado.jpg" alt="RESULTADO"></div><p class="m"><span>Paso 03</span><b class="tr">RESULTADO</b></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3.2 FORMATOS -->
+<section class="slide ink" data-title="3 formatos para subir" data-n="(3.2)" data-k="Qué subir">
+  <p class="d c tr" data-a="clipup" style="position:absolute;left:52px;bottom:176px;font-size:960px;line-height:.76">3</p>
+  <p class="m" data-a="fade" data-d=".4" style="position:absolute;left:64px;top:150px">Formatos</p>
+  <div class="pad" style="left:820px;justify-content:flex-end" data-a="stagger" data-d=".3">
+    <div style="border-top:1px solid;padding:18px 0 30px;display:grid;grid-template-columns:90px 1fr"><span class="m">01</span><div><h2 class="d" style="font-size:112px">Proceso</h2><p class="body" style="opacity:.7;margin-top:10px">Timelapse, antes / después, capas</p></div></div>
+    <div style="border-top:1px solid;padding:18px 0 30px;display:grid;grid-template-columns:90px 1fr"><span class="m">02</span><div><h2 class="d" style="font-size:112px">Opinión</h2><p class="body" style="opacity:.7;margin-top:10px">Lo que pensás del diseño, sin miedo</p></div></div>
+    <div style="border-top:1px solid;padding:18px 0 0;display:grid;grid-template-columns:90px 1fr"><span class="m">03</span><div><h2 class="d tr" style="font-size:112px">Detrás de escena</h2><p class="body" style="opacity:.7;margin-top:10px">Tu escritorio, tus clases, tus viajes</p></div></div>
+  </div>
+</section>
+
+<!-- 3.3 LA REGLA — Perfección tachada / Constancia en pila -->
+<section class="slide paper" data-title="Constancia > perfección" data-n="(3.3)" data-k="La regla">
+  <div class="pad" style="justify-content:flex-end;gap:0">
+    <h2 class="d up tg" style="font-size:282px;line-height:.86;position:relative;display:inline-block;align-self:flex-start"><span data-a="chars" data-d=".1" style="display:block">Perfección</span><i data-a="strike" data-d=".9" style="position:absolute;left:-1%;right:-1%;top:46%;height:22px;background:var(--red)"></i></h2>
+    <h2 class="d up tr" data-a="chars" data-d="1.1" style="font-size:282px;line-height:.86">Constancia</h2>
+  </div>
+</section>
+
+<!-- 3.4 VOZ -->
+<section class="slide ink" data-title="Hablá como hablás" data-n="(3.4)" data-k="Tu voz">
+  <p class="ghost d" style="left:-20px;top:170px;font-size:300px;color:#2a2a2a;opacity:1">como hablás como</p>
+  <div class="pad" style="justify-content:flex-end">
+    <h1 class="d" style="font-size:220px;line-height:.86"><span class="mask"><span data-a="up" data-d=".2">Hablá como hablás.</span></span><span class="mask tr"><span data-a="up" data-d=".5">La voz es tuya.</span></span></h1>
+  </div>
+</section>
+
+<!-- 3.5 MÉTRICAS — contadores de likes -->
+<section class="slide paper" data-title="Un DM vale más que mil likes" data-n="(3.5)" data-k="Métricas">
+  <div class="pad" style="justify-content:space-between">
+    <div style="display:flex;gap:80px;align-items:baseline" data-a="rise" data-d=".1">
+      <p class="d c tr" style="font-size:280px;line-height:.8;white-space:nowrap"><svg class="heart"><use href="#heart"/></svg><span data-a="count" data-to="12" data-d=".3">12</span></p>
+      <p class="d c tg" style="font-size:280px;line-height:.8;white-space:nowrap"><svg class="heart"><use href="#heart"/></svg><span data-a="count" data-to="12000" data-d=".3">12.000</span></p>
+    </div>
+    <h1 class="d" data-a="lines" data-d=".6" style="font-size:132px">Los likes no son tu autoestima.<br><span class="tr">Un DM vale más que mil likes.</span></h1>
+  </div>
+</section>
+
+<!-- 3.6 CONVERSATORIO CON TIMER -->
+<section class="slide red" data-title="De a dos · timer 1:30" data-n="(3.6)" data-k="De a dos">
+  <div class="pad" style="flex-direction:row;gap:80px;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;justify-content:space-between;flex:1">
+      <h1 class="d" data-a="chars" data-d=".2" style="font-size:128px">¿Qué podrías subir mañana con algo que ya hiciste?</h1>
+      <p class="m ti" data-a="rise" data-d=".8" style="font-size:26px">→ Charlalo con quien tengas al lado</p>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;gap:22px;flex:none;width:720px" data-a="pop" data-d=".5">
+      <button class="timer" id="timer" data-sec="90" aria-label="Iniciar o pausar el temporizador" style="text-align:right">1:30</button>
+      <div class="tbar"><i id="tbar"></i></div>
+      <p class="m ti" id="timerHint" style="text-align:right">Tocá para arrancar · T</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3.7 CONSEJO — 12 semanas que se llenan -->
+<section class="slide ink" data-title="Un posteo por semana · 3 meses" data-n="(3.7)" data-k="Consejo">
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="lines" data-d=".15" style="font-size:190px">Un posteo por semana.<br><span class="tr">Tres meses.</span></h1>
+    <div>
+      <div class="weeks" data-a="weeks" data-d=".7">
+        <div><span>S01</span><span>↗</span></div><div><span>S02</span><span>↗</span></div><div><span>S03</span><span>↗</span></div><div><span>S04</span><span>↗</span></div><div><span>S05</span><span>↗</span></div><div><span>S06</span><span>↗</span></div><div><span>S07</span><span>↗</span></div><div><span>S08</span><span>↗</span></div><div><span>S09</span><span>↗</span></div><div><span>S10</span><span>↗</span></div><div><span>S11</span><span>↗</span></div><div><span>S12</span><span>↗</span></div>
+      </div>
+      <p class="d" data-a="rise" data-d="1.9" style="font-size:64px;margin-top:30px;text-align:right">12 posteos = <span class="tr">12 puertas abiertas.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     04 · CAPÍTULO
+     ========================================================= -->
+<section class="slide red" id="ch4" data-title="04 Tu turno" data-n="Capítulo" data-k="04 / 04" data-sec="Tu turno">
+  <p class="chnum d c" data-a="clipup">04</p>
+  <h1 class="chtitle d up" data-a="lines" data-d=".25" style="top:392px;font-size:234px">Tu<br>turno</h1>
+</section>
+
+<!-- 4.1 PREGUNTA FINAL -->
+<section class="slide red" data-title="¿Qué perdés si no lo mostrás?" data-n="(4.1)" data-k="La pregunta">
+  <p class="d c o14" style="position:absolute;right:64px;bottom:176px;font-size:1000px;line-height:.76;color:var(--ink)" data-a="clipup">?</p>
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:210px;max-width:1600px">¿Qué perdés si no lo mostrás?</h1>
+    <p class="hand m ti" data-a="rise" data-d="1" style="font-size:26px;align-self:flex-end"><i></i>Tres respuestas del público</p>
+  </div>
+</section>
+
+<!-- 4.2 RESUMEN -->
+<section class="slide paper" data-title="Para llevarte" data-n="(4.2)" data-k="Para llevarte">
+  <div class="pad" style="justify-content:flex-end" data-a="stagger" data-d=".15">
+    <h2 class="d" style="font-size:98px;border-bottom:1px solid;padding:14px 0"><span class="sup tr">01.</span>Nadie te mira tanto como creés.</h2>
+    <h2 class="d" style="font-size:98px;border-bottom:1px solid;padding:14px 0"><span class="sup tr">02.</span>Lo que no mostrás, no existe.</h2>
+    <h2 class="d" style="font-size:98px;border-bottom:1px solid;padding:14px 0"><span class="sup tr">03.</span>Mostrá el proceso.</h2>
+    <h2 class="d" style="font-size:98px;border-bottom:1px solid;padding:14px 0"><span class="sup tr">04.</span>Constancia antes que perfección.</h2>
+    <h2 class="d tr" style="font-size:98px;padding:14px 0"><span class="sup">05.</span>Empezá esta semana.</h2>
+  </div>
+</section>
+
+<!-- 4.3 FINAL -->
+<section class="slide red" data-title="Mostralo." data-n="(4.3)" data-k="Cierre">
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d up" data-a="lines" data-d=".15" style="font-size:200px;line-height:.84">Nadie contrata<br>lo que no ve.</h1>
+    <h1 class="d up ti" data-a="chars" data-d=".9" style="font-size:200px;line-height:.84;align-self:flex-end">Mostralo.</h1>
+  </div>
+</section>
+
+<!-- 4.4 RETO -->
+<section class="slide ink" data-title="El reto · antes del domingo" data-n="(4.4)" data-k="El reto">
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d" data-a="chars" data-d=".15" style="font-size:176px">Subí algo antes del domingo y <span class="tr">etiquetame.</span></h1>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(238,237,232,.35);padding-top:24px">
+      <p class="d" data-a="rise" data-d=".6" style="font-size:130px">@dzn_gio</p>
+      <p class="d tr" data-a="rise" data-d=".75" style="font-size:84px">#LiberaTuTalento</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4.5 PREGUNTAS -->
+<section class="slide paper" data-title="¿Preguntas?" data-n="(4.5)" data-k="Ronda abierta">
+  <div class="pad" style="justify-content:flex-end">
+    <h1 class="d" data-a="chars" data-d=".2" style="font-size:300px;line-height:.86;letter-spacing:-.06em;white-space:nowrap">¿Pregun<span class="tr">tas?</span></h1>
+  </div>
+</section>
+
+<!-- 4.6 GRACIAS -->
+<section class="slide ink" data-title="Gracias" data-n="(4.6)" data-k="Gracias">
+  <div class="pad" style="justify-content:space-between">
+    <h1 class="d tr" data-a="chars" data-d=".15" style="font-size:340px;line-height:.8;letter-spacing:-.07em">Gracias.</h1>
+    <div style="display:flex;gap:64px;align-items:flex-end">
+      <div style="flex:1" data-a="stagger" data-d=".5">
+        <p style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(238,237,232,.35);padding:12px 0"><span class="d" style="font-size:88px">@dzn_gio</span><span class="m dim">Instagram · X</span></p>
+        <p style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(238,237,232,.35);padding:12px 0"><span class="d" style="font-size:88px">@DznGio</span><span class="m dim">YouTube</span></p>
+        <p style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(238,237,232,.35);border-bottom:1px solid rgba(238,237,232,.35);padding:12px 0"><span class="d" style="font-size:88px">dzngio.com</span><span class="m dim">Web</span></p>
+      </div>
+      <div data-a="pop" data-d=".8" style="display:flex;flex-direction:column;gap:14px;flex:none"><div class="qr"><svg role="img" aria-label="QR a dzngio.github.io/mostralo" style="display:block;width:100%;height:100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="#EEEDE8" d="M0 0h37v37H0z"/><path stroke="#0D0D0D" d="M4 4.5h7m4 0h1m1 0h1m2 0h4m2 0h7M4 5.5h1m5 0h1m1 0h1m1 0h2m2 0h4m1 0h1m2 0h1m5 0h1M4 6.5h1m1 0h3m1 0h1m3 0h5m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1M4 7.5h1m1 0h3m1 0h1m3 0h1m2 0h3m2 0h1m3 0h1m1 0h3m1 0h1M4 8.5h1m1 0h3m1 0h1m1 0h2m4 0h1m2 0h4m1 0h1m1 0h3m1 0h1M4 9.5h1m5 0h1m4 0h3m4 0h2m2 0h1m5 0h1M4 10.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M15 11.5h4m1 0h3M4 12.5h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m2 0h5m1 0h1m3 0h1m2 0h1M5 13.5h1m3 0h1m5 0h1m2 0h2m4 0h3m2 0h1m2 0h1M7 14.5h4m1 0h1m2 0h1m1 0h1m3 0h1m5 0h1m2 0h3M4 15.5h1m1 0h2m1 0h1m1 0h1m2 0h1m1 0h1m3 0h5m6 0h1M4 16.5h1m2 0h2m1 0h4m1 0h1m3 0h3m3 0h2m2 0h1m1 0h2M5 17.5h3m1 0h1m3 0h2m1 0h2m6 0h3m2 0h1m2 0h1M5 18.5h1m2 0h3m1 0h3m3 0h1m5 0h2m3 0h1m1 0h2M4 19.5h2m5 0h3m2 0h3m1 0h4m2 0h1m1 0h2m1 0h1M5 20.5h2m2 0h6m1 0h1m1 0h4m1 0h2m1 0h1m2 0h1m1 0h2M5 21.5h2m1 0h1m5 0h1m1 0h1m1 0h1m1 0h1m3 0h3m2 0h2m1 0h1M4 22.5h1m2 0h1m1 0h4m2 0h1m1 0h1m2 0h2m2 0h2m5 0h2M5 23.5h2m1 0h1m2 0h1m2 0h2m3 0h11m1 0h1M4 24.5h1m2 0h1m2 0h2m3 0h2m2 0h3m2 0h5M12 25.5h2m2 0h2m2 0h3m1 0h1m3 0h1m1 0h3M4 26.5h7m5 0h1m1 0h1m2 0h4m1 0h1m1 0h2m1 0h2M4 27.5h1m5 0h1m2 0h7m1 0h2m1 0h1m3 0h2m1 0h2M4 28.5h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h1m1 0h2m2 0h5m3 0h1M4 29.5h1m1 0h3m1 0h1m3 0h2m2 0h1m1 0h3m5 0h1m1 0h3M4 30.5h1m1 0h3m1 0h1m1 0h4m1 0h2m1 0h1m6 0h3m2 0h1M4 31.5h1m5 0h1m2 0h1m2 0h1m1 0h1m2 0h1m1 0h2m2 0h1m3 0h1M4 32.5h7m1 0h1m3 0h2m3 0h1m1 0h3m1 0h2m2 0h2"/></svg></div><p class="m" style="display:flex;justify-content:space-between"><span>Llevate la charla</span><span class="tr">↗</span></p></div>
+      <svg data-a="fade" data-d="1" style="width:220px;height:115px;flex:none;color:var(--paper)" aria-label="La Metro Diseño Gráfico"><use href="#lm-dg"/></svg>
+    </div>
+  </div>
+</section>
+
+
+</div>
+</div>
+
+<!-- Controles -->
+<div class="deck-controls ctrl" id="ctrl" aria-label="Controles de la presentación">
+  <button id="prev" aria-label="Slide anterior"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count" id="count">1 / 1</span>
+  <button id="next" aria-label="Slide siguiente"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+  <button id="ovBtn" aria-label="Vista general (G)"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg></button>
+  <button id="fs" aria-label="Pantalla completa (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</div>
+<div class="bar" id="bar"></div>
+<div class="overview" id="overview" role="dialog" aria-label="Vista general"><h3>Vista general · Esc para cerrar</h3><div class="ov-grid" id="ovGrid"></div></div>
+<div class="edit-hotzone" id="hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Modo edición (E)">Editar · E</button>
+
+<!-- GSAP + SplitText (gratuitos desde 3.13) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+/* ===========================================
+   DECK ENGINE
+   - Escalado del escenario 1920×1080
+   - Navegación con cortina + timelines GSAP por slide
+   - Interacciones: votación, encuesta, timer, índice, vista general, edición
+   =========================================== */
+(function(){
+  const viewport=document.getElementById('viewport');
+  const stage=document.getElementById('stage');
+  const slides=[...stage.querySelectorAll('.slide')];
+  const N=slides.length;
+  const countEl=document.getElementById('count'), bar=document.getElementById('bar');
+  const G=window.gsap;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(G&&window.SplitText) G.registerPlugin(SplitText);
+  let cur=-1, tl=null, splits=[], loops=[], editing=false;
+  const pad=n=>String(n).padStart(2,'0');
+
+  /* --- Chrome inyectado (rótulos mono + logo + numeración) --- */
+  let sec='Introducción';
+  slides.forEach((s,i)=>{
+    if(s.dataset.sec) sec=s.dataset.sec;
+    if(s.hasAttribute('data-nochrome')||s.querySelector(':scope>.chrome')) return;
+    const top=document.createElement('div'); top.className='chrome';
+    top.innerHTML=`<p><b>${s.dataset.n||''}</b> ${s.dataset.k||''}</p><p class="dim">Nadie contrata lo que no ve</p><p class="dim">@dzn_gio</p><svg class="lm" viewBox="0 0 287.57 62.28" style="width:111px"><use href="#lm-word"/></svg>`;
+    s.prepend(top);
+    if(!s.querySelector(':scope>.foot')){
+      const f=document.createElement('div'); f.className='foot';
+      f.innerHTML=`<p>La Metro · Diseño gráfico</p><p class="dim">${sec}</p><p class="dim"></p><p>${pad(i+1)} / ${pad(N)}</p>`;
+      s.append(f);
+    }
+  });
+
+  /* --- Escalado --- */
+  function fit(){
+    const w=viewport.clientWidth,h=viewport.clientHeight;
+    const k=Math.min(w/1920,h/1080);
+    stage.style.transform=`translate(${(w-1920*k)/2}px,${(h-1080*k)/2}px) scale(${k})`;
+  }
+  addEventListener('resize',fit); fit();
+
+  /* --- Timelines de entrada (atributos data-a) --- */
+  const anim=el=>el.querySelectorAll('[data-a]');
+  function cleanup(s){
+    if(tl){tl.kill();tl=null}
+    loops.forEach(l=>l.kill()); loops=[];
+    splits.forEach(sp=>sp.revert()); splits=[];
+    if(!s||!G) return;
+    s.querySelectorAll('[data-a]').forEach(el=>{
+      if(el.dataset.final!=null) el.textContent=el.dataset.final;
+      G.set(el,{clearProps:'transform,opacity,visibility,clipPath'});
+      [...el.children].forEach(c=>G.set(c,{clearProps:'transform,opacity,visibility'}));
+    });
+    s.querySelectorAll('.weeks div').forEach(d=>d.classList.remove('on'));
+  }
+  /* La máscara de SplitText usa la altura de línea (.86): darle aire para no cortar tildes ni descendentes */
+  /* Divide el bloque en líneas reales (sin máscaras ni letras sueltas): conserva interlineado y kerning */
+  function splitLines(el){
+    const ta=getComputedStyle(el).textAlign;
+    const w0=el.style.width, m0=el.style.minWidth, W=(parseFloat(getComputedStyle(el).width)+.5)+'px'; el.style.width=W; el.style.minWidth=W; /* fijar el ancho: al dividir no se achica ni empuja a sus vecinos */
+    const sp=SplitText.create(el,{type:'lines'});
+    sp.lines.forEach(l=>l.style.textAlign=ta); /* SplitText fuerza "start": respetar la alineación real */
+    splits.push({revert(){ sp.revert(); el.style.width=w0; el.style.minWidth=m0; }});
+    return sp;
+  }
+  /* Órbita: posiciona cada pieza sobre una elipse; abajo = adelante (más grande y encima) */
+  /* Órbita 3D real: cada pieza tiene profundidad (translateZ) y un leve giro; el navegador resuelve
+     las superposiciones píxel a píxel, así el cruce entre piezas es continuo (sin saltos de z-index) */
+  function placeOrbit(el,ang){
+    const orbs=[...el.children], n=orbs.length, W=el.clientWidth, H=el.clientHeight, R=Math.min(W*.52,440), ry=H*.3, cx=-30, cy=-92;
+    orbs.forEach((o,i)=>{ const a=ang+i/n*Math.PI*2, c=Math.cos(a), sn=Math.sin(a);
+      o.style.transform=`translate(-50%,-50%) translate3d(${(cx+R*sn).toFixed(1)}px,${(cy+ry*c).toFixed(1)}px,${(R*c).toFixed(1)}px) rotateY(${(sn*24).toFixed(2)}deg)`;
+      o.firstElementChild.style.filter=`brightness(${(.6+.2*(c+1)).toFixed(3)})`; });
+  }
+  const CP='transform,opacity,visibility'; /* al terminar, devolver el control al CSS (hover, clases) */
+  function build(s){
+    if(!G||reduce){ s.querySelectorAll('.weeks div').forEach(d=>d.classList.add('on')); s.querySelectorAll('[data-a="orbit"]').forEach(o=>placeOrbit(o,.4)); return; }
+    const t=G.timeline({defaults:{ease:'expo.out'}});
+    anim(s).forEach(el=>{
+      const d=parseFloat(el.dataset.d||0)+.12, kids=[...el.children];
+      switch(el.dataset.a){
+        case 'chars': /* entrada de titulares: cada línea sube y aparece, sin recortes */
+        case 'lines':{ if(!window.SplitText){t.from(el,{y:50,autoAlpha:0,duration:1,clearProps:CP},d);break}
+          const sp=splitLines(el);
+          t.from(sp.lines,{yPercent:38,autoAlpha:0,duration:1.1,stagger:.1,ease:'expo.out'},d); break;}
+        case 'up':     t.from(el,{yPercent:38,autoAlpha:0,duration:1.1,ease:'expo.out',clearProps:CP},d); break;
+        case 'rise':   t.from(el,{y:28,autoAlpha:0,duration:1,clearProps:CP},d); break;
+        case 'fade':   t.from(el,{autoAlpha:0,duration:1.1,ease:'power1.out',clearProps:CP},d); break;
+        case 'pop':    t.from(el,{scale:.82,autoAlpha:0,duration:.9,ease:'back.out(1.6)',clearProps:CP},d); break;
+        case 'clipup': if(el.tagName==='P'){ t.from(el,{yPercent:10,autoAlpha:0,duration:1.3,ease:'expo.out',clearProps:CP},d); break; }
+                       t.fromTo(el,{clipPath:'inset(100% 0% 0% 0%)'},{clipPath:'inset(0% 0% 0% 0%)',duration:1.3,ease:'expo.inOut',clearProps:'clipPath'},d); break;
+        case 'clipx':  t.fromTo(el,{clipPath:'inset(0% 100% 0% 0%)'},{clipPath:'inset(0% 0% 0% 0%)',duration:1.2,ease:'expo.inOut',clearProps:'clipPath'},d); break;
+        case 'line':   t.from(el,{scaleX:0,transformOrigin:'left center',duration:1.3,ease:'expo.inOut'},d); break;
+        case 'liney':  t.from(el,{scaleY:0,transformOrigin:'center top',duration:1.3,ease:'expo.inOut'},d); break;
+        case 'strike': t.from(el,{scaleX:0,transformOrigin:'left center',duration:.7,ease:'power4.inOut'},d); break;
+        case 'stagger':t.from(kids,{y:70,autoAlpha:0,duration:1,stagger:.08,clearProps:CP},d); break;
+        case 'pops':   t.from(kids,{scale:.6,autoAlpha:0,duration:.8,stagger:{each:.05,from:'random'},ease:'back.out(1.5)',clearProps:CP},d); break;
+        case 'stack':{ /* pila cinética: filas entran alternadas y luego derivan */
+          t.from(kids,{xPercent:i=>i%2?-40:40,autoAlpha:0,duration:1.4,stagger:.07,ease:'expo.out'},d);
+          t.add(()=>loops.push(G.to(kids,{xPercent:i=>i%2?-2.5:2.5,duration:5,ease:'sine.inOut',yoyo:true,repeat:-1})),d+1.2);
+          break;}
+        case 'echo':{ /* copias que se desplazan desde el original */
+          const ec=el.querySelectorAll('.echo');
+          t.from(el.querySelector('.echo-src'),{y:60,autoAlpha:0,duration:1},d);
+          t.fromTo(ec,{y:0,autoAlpha:0},{y:(i)=>(i+1)*26,x:(i)=>(i+1)*18,autoAlpha:1,duration:1.1,stagger:.12,ease:'expo.out'},d+.45);
+          break;}
+        case 'count':{ /* contador numérico */
+          if(el.dataset.final==null) el.dataset.final=el.textContent;
+          const to=parseFloat(el.dataset.to), dec=+(el.dataset.dec||0), o={v:0};
+          const fmt=v=>v.toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+          el.textContent=el.dataset.final; el.style.minWidth=''; el.style.minWidth=el.offsetWidth+'px'; /* reservar el ancho final: nada se mueve mientras cuenta */
+          el.textContent=fmt(0);
+          t.to(o,{v:to,duration:1.8,ease:'power3.out',onUpdate:()=>el.textContent=fmt(o.v)},d); break;}
+        case 'type':{ /* tipeo con indicador "escribiendo…" */
+          if(el.dataset.final==null) el.dataset.final=el.textContent;
+          const txt=el.dataset.final, o={v:0};
+          el.textContent=txt; el.style.minHeight=''; el.style.minHeight=el.offsetHeight+'px'; /* reservar la altura final: la burbuja no crece de golpe */
+          el.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+          t.to(o,{v:txt.length,duration:txt.length*.032,ease:'none',onStart:()=>el.textContent='',onUpdate:()=>el.textContent=txt.slice(0,Math.round(o.v))},d+.9); break;}
+        case 'orbit':{ /* piezas girando en órbita continua */
+          const st={a:.4,v:1,tv:1}; placeOrbit(el,st.a);
+          t.from([...el.children].map(o=>o.firstElementChild),{scale:0,autoAlpha:0,duration:1.1,stagger:.07,ease:'back.out(1.3)',clearProps:CP},d);
+          const f=(time,dt)=>{ st.v+=(st.tv-st.v)*.05; st.a+=st.v*Math.min(dt,50)*.00016; placeOrbit(el,st.a); };
+          G.ticker.add(f); loops.push({kill:()=>G.ticker.remove(f)});
+          el.onmouseenter=()=>st.tv=.12; el.onmouseleave=()=>st.tv=1; break;}
+        case 'igfeed':{ /* el feed baja solo: primero el perfil, después la grilla en loop infinito */
+          const sc=el.firstElementChild, g=sc.querySelector('.iggrid'), head=sc.querySelector('.ig-head');
+          const st={p:0,v:0,tv:1,w:d*1000}; sc.style.transform='translateY(0)'; /* w: pausa propia mostrando el perfil antes de bajar */
+          const f=(time,dt)=>{ if(st.w>0){ st.w-=Math.min(dt,250); return; } const P=head.offsetHeight, Gh=g.offsetHeight+3; st.v+=(st.tv-st.v)*.04; st.p+=st.v*Math.min(dt,250)*.075; /* avanza por tiempo real aunque bajen los cuadros */
+            const y=st.p<P+Gh?st.p:P+((st.p-P)%Gh); sc.style.transform='translateY('+(-y).toFixed(1)+'px)'; };
+          G.ticker.add(f); loops.push({kill:()=>G.ticker.remove(f)});
+          el.onmouseenter=()=>st.tv=.15; el.onmouseleave=()=>st.tv=1; break;}
+        case 'weeks':{ /* 12 semanas que se encienden */
+          kids.forEach((k,i)=>t.add(()=>k.classList.add('on'),d+i*.09));
+          t.from(kids,{y:30,autoAlpha:0,duration:.6,stagger:.04},d-.4); break;}
+      }
+    });
+    /* Al terminar, deshacer los splits: el texto vuelve a ser texto normal, sin máscaras */
+    t.eventCallback('onComplete',()=>{ splits.forEach(sp=>sp.revert()); splits=[]; });
+    tl=t;
+  }
+
+  /* --- Navegación con cortina --- */
+  function show(n){
+    slides.forEach((s,i)=>s.classList.toggle('active',i===n));
+    cur=n;
+    countEl.textContent=`${pad(n+1)} / ${pad(N)}`;
+    bar.style.width=((n+1)/N*100)+'%';
+    if(location.hash!=='#'+(n+1)) history.replaceState(null,'','#'+(n+1));
+    markOverview();
+  }
+  function go(n,dir){
+    n=Math.max(0,Math.min(N-1,n));
+    if(n===cur) return;
+    if(dir==null) dir=n>cur?1:-1;
+    const prev=slides[cur], nx=slides[n];
+    cleanup(prev); show(n); if(!editing) build(nx);
+    /* Seguro: si el reloj de animación se frena (pestaña en segundo plano), mostrar el estado final */
+    if(G){ const f0=G.ticker.frame; setTimeout(()=>{ if(G.ticker.frame-f0<5&&tl) tl.progress(1) },1500); }
+  }
+  const next=()=>go(cur+1,1), prev=()=>go(cur-1,-1);
+  window.__deck={go,get tl(){return tl},get cur(){return cur}};
+
+  /* --- Votación 1.1 --- */
+  const votes=[...document.querySelectorAll('.vote')];
+  function paintVotes(){
+    const vals=votes.map(v=>+v.dataset.v||0), max=Math.max(1,...vals);
+    votes.forEach((v,i)=>{v.querySelector('.vc').textContent=vals[i];v.querySelector('.fillv').style.height=(vals[i]/max*100)+'%';v.classList.toggle('hot',vals[i]===max&&vals[i]>0&&vals[i]/max>.5)});
+  }
+  votes.forEach(v=>{
+    v.addEventListener('click',e=>{e.stopPropagation(); if(editing)return; v.dataset.v=(+v.dataset.v||0)+(e.shiftKey?-1:1); if(+v.dataset.v<0)v.dataset.v=0; paintVotes(); if(G)G.fromTo(v.querySelector('.L'),{scale:1.15},{scale:1,duration:.5,ease:'back.out(3)'});});
+    v.addEventListener('contextmenu',e=>{e.preventDefault();v.dataset.v=Math.max(0,(+v.dataset.v||0)-1);paintVotes()});
+  });
+
+  /* --- Encuesta 2.9 --- */
+  document.querySelectorAll('.poll').forEach(p=>{
+    p.addEventListener('click',e=>{e.stopPropagation(); if(editing)return; const em=p.querySelector('em'); em.textContent=(+em.textContent||0)+(e.shiftKey?-1:1); if(+em.textContent<0)em.textContent=0; if(G)G.fromTo(p,{scale:1.08},{scale:1,duration:.4,ease:'back.out(3)'});});
+    p.addEventListener('contextmenu',e=>{e.preventDefault();const em=p.querySelector('em');em.textContent=Math.max(0,(+em.textContent||0)-1)});
+  });
+
+  /* --- Índice: ir al capítulo --- */
+  document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); if(editing)return; go(slides.indexOf(document.getElementById(b.dataset.goto)))}));
+  /* Links y piezas: no avanzan slide */
+  stage.querySelectorAll('a,.marq,.work,.igrid').forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
+
+  /* --- Timer 3.6 --- */
+  const tb=document.getElementById('timer'), th=document.getElementById('timerHint'), tbar=document.getElementById('tbar');
+  const total=+tb.dataset.sec; let left=total, tick=null;
+  const fmtT=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  const paintT=()=>{tb.textContent=fmtT(left);tbar.style.transform=`scaleX(${left/total})`;tbar.style.transition='transform 1s linear'};
+  tb.addEventListener('click',e=>{
+    e.stopPropagation(); if(editing)return;
+    if(left<=0){left=total;tb.classList.remove('done');paintT();th.textContent='Tocá para arrancar · T';return}
+    if(tick){clearInterval(tick);tick=null;th.textContent='En pausa · tocá para seguir';return}
+    th.textContent='Corriendo · tocá para pausar';
+    tick=setInterval(()=>{left--;paintT();if(left<=0){clearInterval(tick);tick=null;tb.classList.add('done');th.textContent='¡Tiempo! · tocá para reiniciar';if(G)G.fromTo(tb,{scale:1.1},{scale:1,duration:.6,ease:'elastic.out(1,.4)'})}},1000);
+  });
+
+  /* --- Vista general --- */
+  const ov=document.getElementById('overview'), ovGrid=document.getElementById('ovGrid');
+  slides.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML=`<b>${pad(i+1)}</b>${s.dataset.title||''}`;b.addEventListener('click',()=>{toggleOv(false);go(i)});ovGrid.append(b)});
+  function markOverview(){[...ovGrid.children].forEach((b,i)=>b.classList.toggle('cur',i===cur))}
+  function toggleOv(force){ov.classList.toggle('open',force??!ov.classList.contains('open'))}
+  document.getElementById('ovBtn').addEventListener('click',e=>{e.stopPropagation();toggleOv()});
+
+  /* --- Controles --- */
+  document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();next()});
+  document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();prev()});
+  const fsBtn=document.getElementById('fs');
+  fsBtn.addEventListener('click',e=>{e.stopPropagation();try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(_){}});
+  stage.addEventListener('click',e=>{
+    if(editing||e.target.closest('button,a')) return;
+    const r=stage.getBoundingClientRect(); (e.clientX-r.left)<r.width/3?prev():next();
+  });
+  document.addEventListener('keydown',e=>{
+    if(editing){ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save()} if(e.key==='Escape')toggleEdit(); return; }
+    if(e.target.closest&&e.target.closest('button')&&(e.key===' '||e.key==='Enter'))return;
+    switch(e.key){
+      case 'ArrowRight':case 'ArrowDown':case 'PageDown':case ' ':e.preventDefault();next();break;
+      case 'ArrowLeft':case 'ArrowUp':case 'PageUp':e.preventDefault();prev();break;
+      case 'Home':go(0,-1);break; case 'End':go(N-1,1);break;
+      case 'f':case 'F':fsBtn.click();break;
+      case 'g':case 'G':case 'o':case 'O':toggleOv();break;
+      case 'Escape':toggleOv(false);break;
+      case 't':case 'T':if(slides[cur].contains(tb))tb.click();break;
+      case 'e':case 'E':toggleEdit();break;
+    }
+  });
+  let x0=null;
+  stage.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+  stage.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>40)dx<0?next():prev()});
+  let idle; const wake=()=>{document.body.classList.remove('idle');clearTimeout(idle);idle=setTimeout(()=>document.body.classList.add('idle'),2600)};
+  addEventListener('mousemove',wake); addEventListener('keydown',wake); wake();
+
+  /* --- Edición inline (E · Ctrl+S guarda una copia) --- */
+  const editToggle=document.getElementById('editToggle'), hot=document.getElementById('hotzone');
+  let hideT;
+  hot.addEventListener('mouseenter',()=>{clearTimeout(hideT);editToggle.classList.add('show')});
+  hot.addEventListener('mouseleave',()=>{hideT=setTimeout(()=>{if(!editing)editToggle.classList.remove('show')},400)});
+  editToggle.addEventListener('mouseenter',()=>clearTimeout(hideT));
+  editToggle.addEventListener('mouseleave',()=>{hideT=setTimeout(()=>{if(!editing)editToggle.classList.remove('show')},400)});
+  editToggle.addEventListener('click',()=>toggleEdit());
+  const editables=()=>stage.querySelectorAll('.slide h1,.slide h2,.slide p,.slide figcaption span,.slide figcaption b,.slide .q');
+  function toggleEdit(){
+    editing=!editing;
+    document.body.classList.toggle('editing',editing);
+    editToggle.classList.toggle('active',editing);
+    editToggle.textContent=editing?'Guardar: Ctrl+S · Salir: Esc':'Editar · E';
+    if(editing){cleanup(slides[cur])}
+    editables().forEach(el=>{if(editing)el.setAttribute('contenteditable','true');else el.removeAttribute('contenteditable')});
+    if(!editing){build(slides[cur])}
+  }
+  function save(){
+    cleanup(slides[cur]);
+    const clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+    clone.querySelector('body').classList.remove('editing','idle');
+    clone.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
+    const blob=new Blob(['<!DOCTYPE html>\n'+clone.outerHTML],{type:'text/html'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='index.html';a.click();
+  }
+
+  /* --- Arranque (espera fuentes para que SplitText mida bien) --- */
+  const startAt=()=>{const m=(location.hash||'').match(/^#(\d+)$/);return m?Math.min(N,Math.max(1,+m[1]))-1:0};
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{show(startAt());build(slides[cur])});
+  addEventListener('hashchange',()=>{const n=startAt();if(n!==cur)go(n)});
+})();
+</script>
+</body>
+</html>
